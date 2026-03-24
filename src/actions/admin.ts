@@ -398,5 +398,16 @@ export async function importGameStatsFromTxt(gameId: number, txtData: string, to
     await processPitchers(parsedData.localPitchers, team2Id);
 
     revalidatePath('/');
-    return { success: true };
+    return {
+        success: true,
+        updatedGame: {
+            score1: String(parsedData.visitorRHE.r ?? ""),
+            hits1: String(parsedData.visitorRHE.h ?? ""),
+            errors1: String(parsedData.visitorRHE.e ?? ""),
+            score2: String(parsedData.localRHE.r ?? ""),
+            hits2: String(parsedData.localRHE.h ?? ""),
+            errors2: String(parsedData.localRHE.e ?? ""),
+            innings: inningsArray,
+        }
+    };
 }

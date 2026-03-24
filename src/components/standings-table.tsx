@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import type { Standing, Team, Game } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import {
@@ -42,6 +43,8 @@ export default function StandingsTable({
   onNavigate,
   champion
 }: StandingsTableProps) {
+  const [hoveredTeamId, setHoveredTeamId] = useState<number | null>(null);
+
   const tableColumns = ["POS", "TEAM", "G", "W", "L", "RS", "RA", "PCT", "GB"];
 
   const getTeamName = (teamId: number) => {
@@ -94,10 +97,10 @@ export default function StandingsTable({
           <div className="h-2 w-2 rounded-full bg-primary animate-pulse" />
         </div>
         <CardDescription className="text-xs uppercase tracking-wider font-medium opacity-70">
-          Actualización en tiempo real • Ronda Inicial
+          RONDA INICIAL
         </CardDescription>
       </CardHeader>
-      <CardContent className="p-0">
+      <CardContent className="p-0 relative">
         <TooltipProvider>
           <div className="overflow-x-auto">
             <Table>
@@ -133,52 +136,25 @@ export default function StandingsTable({
                         )}
                       </TableCell>
                       <TableCell className="py-2">
-                        <Tooltip delayDuration={200}>
-                          <TooltipTrigger asChild>
-                            <div className="flex flex-col cursor-help py-2">
-                              <span className={cn(
-                                "text-sm font-bold uppercase tracking-tight transition-colors group-hover:text-primary",
-                                isLeader ? "text-primary" : "text-foreground"
-                              )}>
-                                {teamName}
-                              </span>
-                              {isLeader && (
-                                <span className="text-[9px] font-black tracking-widest text-primary/60 uppercase">
-                                  Líder del Torneo
-                                </span>
-                              )}
-                            </div>
-                          </TooltipTrigger>
-                          <TooltipContent className="p-4 bg-background/95 backdrop-blur-md border-primary/20 shadow-2xl w-[280px] sm:w-[320px]">
-                            <div className="space-y-3">
-                              <div className="flex items-center gap-2 border-b border-primary/10 pb-2">
-                                <div className="h-2 w-2 rounded-full bg-primary animate-pulse" />
-                                <span className="text-[10px] font-black uppercase tracking-widest text-primary">Historial de Partidos</span>
-                              </div>
-                              <div className="space-y-3">
-                                {teamRecord.length > 0 ? (
-                                  teamRecord.map((row) => (
-                                    <div key={row.gameNum} className="flex justify-between items-center text-xs gap-3 py-1 group/item border-b border-primary/5 last:border-0">
-                                      <span className="font-bold text-foreground/80 leading-tight">vs. {row.opponentName}</span>
-                                      <span className={cn(
-                                        "px-2 py-0.5 rounded-full text-[9px] font-black uppercase shadow-sm border whitespace-nowrap flex-shrink-0",
-                                        row.result === "Ganó"
-                                          ? "bg-green-500/10 text-green-500 border-green-500/20"
-                                          : "bg-red-500/10 text-red-500 border-red-500/20"
-                                      )}>
-                                        {row.result} {row.score}
-                                      </span>
-                                    </div>
-                                  ))
-                                ) : (
-                                  <div className="text-[10px] italic text-muted-foreground py-2 text-center">
-                                    Aún no se han registrado juegos finalizados.
-                                  </div>
-                                )}
-                              </div>
-                            </div>
-                          </TooltipContent>
-                        </Tooltip>
+                        <div 
+                          className="flex flex-col cursor-help py-2"
+                          onMouseEnter={() => setHoveredTeamId(standing.teamId)}
+                          onMouseLeave={() => setHoveredTeamId(null)}
+                          onTouchStart={() => setHoveredTeamId(standing.teamId)}
+                          onTouchEnd={() => setHoveredTeamId(null)}
+                        >
+                          <span className={cn(
+                            "text-sm font-bold uppercase tracking-tight transition-colors group-hover:text-primary",
+                            isLeader ? "text-primary" : "text-foreground"
+                          )}>
+                            {teamName}
+                          </span>
+                          {isLeader && (
+                            <span className="text-[9px] font-black tracking-widest text-primary/60 uppercase">
+                              Líder del Torneo
+                            </span>
+                          )}
+                        </div>
                       </TableCell>
                       <TableCell className="text-center font-bold text-sm text-primary/60">
                         {standing.w + standing.l}
@@ -199,6 +175,45 @@ export default function StandingsTable({
               </TableBody>
             </Table>
           </div>
+
+          {/* Overlay fijo para el historial de partidos */}
+          {(() => {
+            const hoveredTeamRecord = hoveredTeamId ? getTeamRecord(hoveredTeamId) : [];
+            return (
+              <div className={cn(
+                "absolute top-1/2 left-1/2 md:left-[30%] lg:left-[25%] xl:left-[22%] -translate-x-1/2 md:translate-x-0 -translate-y-1/2 pointer-events-none z-[100] w-[280px] sm:w-[320px] p-4 bg-background/95 backdrop-blur-xl border border-primary/20 shadow-2xl rounded-2xl transition-all duration-300",
+                hoveredTeamId ? "opacity-100 scale-100" : "opacity-0 scale-95"
+              )}>
+                <div className="space-y-3">
+                  <div className="flex items-center gap-2 border-b border-primary/10 pb-2">
+                    <div className="h-2 w-2 rounded-full bg-primary animate-pulse" />
+                    <span className="text-[10px] font-black uppercase tracking-widest text-primary">Historial de Partidos</span>
+                  </div>
+                  <div className="space-y-3">
+                    {hoveredTeamRecord.length > 0 ? (
+                      hoveredTeamRecord.map((row) => (
+                        <div key={row.gameNum} className="flex justify-between items-center text-xs gap-3 py-1 border-b border-primary/5 last:border-0">
+                          <span className="font-bold text-foreground/80 leading-tight">vs. {row.opponentName}</span>
+                          <span className={cn(
+                            "px-2 py-0.5 rounded-full text-[9px] font-black uppercase shadow-sm border whitespace-nowrap flex-shrink-0",
+                            row.result === "Ganó"
+                              ? "bg-green-500/10 text-green-500 border-green-500/20"
+                              : "bg-red-500/10 text-red-500 border-red-500/20"
+                          )}>
+                            {row.result} {row.score}
+                          </span>
+                        </div>
+                      ))
+                    ) : (
+                      <div className="text-[10px] italic text-muted-foreground py-2 text-center">
+                        Aún no se han registrado juegos finalizados.
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            );
+          })()}
 
           {champion && (() => {
             const finalGame = games.find(g => g.isChampionship);
@@ -270,7 +285,7 @@ export default function StandingsTable({
         </TooltipProvider>
       </CardContent>
       <CardFooter className="flex flex-col items-start gap-4 p-6 border-t border-primary/5 bg-primary/[0.01]">
-        {hasTies && <TieBreakRulesDialog />}
+        <TieBreakRulesDialog />
         {onNavigate && (
           <div className="flex justify-end w-full">
             <Button

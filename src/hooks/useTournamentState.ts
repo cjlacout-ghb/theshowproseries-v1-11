@@ -90,14 +90,18 @@ export function useTournamentState({ initialTeams, initialGames, isAdmin }: UseT
         setStandings(newStandings);
 
         if (newStandings.length > 1) {
-            const team2Id = String(newStandings[0].teamId);
-            const team1Id = String(newStandings[1].teamId);
+            const firstPlaceId = String(newStandings[0].teamId);
+            const secondPlaceId = String(newStandings[1].teamId);
 
-            if (championshipGame.team1Id !== team1Id || championshipGame.team2Id !== team2Id) {
+            const hasBothTeams = 
+                (championshipGame.team1Id === firstPlaceId && championshipGame.team2Id === secondPlaceId) ||
+                (championshipGame.team1Id === secondPlaceId && championshipGame.team2Id === firstPlaceId);
+
+            if (!hasBothTeams) {
                 setChampionshipGame(prev => ({
                     ...prev,
-                    team1Id,
-                    team2Id
+                    team1Id: secondPlaceId, // Default: visit is 2nd
+                    team2Id: firstPlaceId   // Default: home is 1st
                 }));
                 if (isAdmin) {
                     markGameForPersistence(championshipGame.id);
@@ -313,12 +317,30 @@ export function useTournamentState({ initialTeams, initialGames, isAdmin }: UseT
             throw new Error("No has iniciado sesión como administrador (Token faltante).");
         }
         const result = await importGameStatsFromTxt(gameId, txt, token);
-        if (result.success) {
-            // Force a reload to refresh all data (Standings, Leaders, etc.)
-            window.location.reload();
+        if (result.success && result.updatedGame) {
+            // Update local state with the imported data — no page reload needed
+            const patch = result.updatedGame;
+            const applyPatch = (game: Game): Game => ({
+                ...game,
+                score1: patch.score1,
+                hits1: patch.hits1,
+                errors1: patch.errors1,
+                score2: patch.score2,
+                hits2: patch.hits2,
+                errors2: patch.errors2,
+                innings: patch.innings.length > 0 ? patch.innings : game.innings,
+            });
+
+            if (championshipGame.id === gameId) {
+                setChampionshipGame(prev => applyPatch(prev));
+            } else {
+                setPreliminaryGames(prev =>
+                    prev.map(g => g.id === gameId ? applyPatch(g) : g)
+                );
+            }
         }
         return result;
-    }, [getAuthToken]);
+    }, [getAuthToken, championshipGame.id]);
 
 
     const handleResetTournament = useCallback(async () => {

@@ -188,6 +188,7 @@ export default function TournamentManager({ initialTeams, initialGames }: Tourna
                                     title="Partido Final"
                                     games={[championshipGame]}
                                     teams={teams}
+                                    standings={standings}
                                     onGameChange={(gameId, field, value) => handleGameChange(gameId, field, value, true)}
                                     onInningChange={(gameId, inningIndex, teamIndex, value) => handleInningChange(gameId, inningIndex, teamIndex, value, true)}
                                     onSaveBatting={handleSaveBatting}

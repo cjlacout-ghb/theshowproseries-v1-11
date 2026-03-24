@@ -132,7 +132,7 @@ export default function BoxScoreDialog({ game, teams, onSaveBatting, onSavePitch
                     </TabsList>
 
                     {isAdmin && (
-                        <div className="absolute right-4 top-4">
+                        <div className="absolute right-14 top-3 z-50">
                             <Dialog open={isImportOpen} onOpenChange={setIsImportOpen}>
                                 <DialogTrigger asChild>
                                     <Button size="sm" variant="outline" className="gap-2 border-primary/20 text-[10px] font-black uppercase tracking-widest hover:border-primary hover:bg-primary/5">

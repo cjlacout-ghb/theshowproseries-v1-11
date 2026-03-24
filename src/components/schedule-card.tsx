@@ -2,7 +2,7 @@
 "use client";
 
 import BoxScoreDialog from "./BoxScoreDialog";
-import type { Game, Team, BattingStat, PitchingStat } from "@/lib/types";
+import type { Game, Team, BattingStat, PitchingStat, Standing } from "@/lib/types";
 import {
   Card,
   CardContent,
@@ -17,7 +17,7 @@ import { Fragment } from "react";
 import { Separator } from "./ui/separator";
 import { Button } from "./ui/button";
 import { cn } from "@/lib/utils";
-import { ArrowUpDown, Trash2 } from "lucide-react";
+import { ArrowUpDown, Trash2, AlertTriangle } from "lucide-react";
 
 type ScheduleCardProps = {
   title: string;
@@ -35,6 +35,7 @@ type ScheduleCardProps = {
   footer?: React.ReactNode;
   isChampionship?: boolean;
   isAdmin?: boolean;
+  standings?: Standing[];
 };
 
 export default function ScheduleCard({
@@ -52,7 +53,8 @@ export default function ScheduleCard({
   onNavigateToStandings,
   footer,
   isChampionship = false,
-  isAdmin = false
+  isAdmin = false,
+  standings
 }: ScheduleCardProps) {
   const getTeamName = (teamId: string) => {
     return teams.find((t) => String(t.id) === teamId)?.name || "";
@@ -65,15 +67,30 @@ export default function ScheduleCard({
     const teamName = teamId ? getTeamName(teamId) : "";
 
     if (!isChampionship) {
-      return teamName;
+      return <span className="font-bold">{teamName}</span>;
     }
 
-    const label = teamNumber === 1 ? "SEGUNDO RONDA INICIAL" : "PRIMERO RONDA INICIAL";
+    let label = teamNumber === 1 ? "SEGUNDO RONDA INICIAL" : "PRIMERO RONDA INICIAL";
+
+    if (standings && standings.length > 1 && teamId) {
+      const firstPlaceId = String(standings[0].teamId);
+      const secondPlaceId = String(standings[1].teamId);
+      if (teamId === firstPlaceId) {
+        label = "PRIMERO RONDA INICIAL";
+      } else if (teamId === secondPlaceId) {
+        label = "SEGUNDO RONDA INICIAL";
+      }
+    }
 
     if (teamName) {
-      return `${label}: ${teamName}`;
+      return (
+        <span className="flex items-center gap-2 overflow-hidden">
+          <span className="font-normal opacity-70 shrink-0">{label}:</span>
+          <span className="font-bold truncate">{teamName}</span>
+        </span>
+      );
     }
-    return label;
+    return <span className="font-normal opacity-70">{label}</span>;
   }
 
   return (
@@ -107,6 +124,8 @@ export default function ScheduleCard({
           const hasInnings = game.innings.some((inn: any) => inn[0] !== "" || inn[1] !== "");
           const renderValue = (val: string) => (val === "0" && !hasInnings) ? "" : val;
 
+          const isSuspended = game.id === 13 || game.id === 14 || game.id === 15;
+
           return (
             <Fragment key={game.id}>
               {showDay && (
@@ -116,16 +135,24 @@ export default function ScheduleCard({
                 </div>
               )}
               <div className="space-y-6 rounded-2xl border border-primary/10 bg-primary/[0.02] p-6 shadow-sm group hover:border-primary/20 transition-all">
-                <div className="flex justify-between items-center pb-2 border-b border-primary/5">
-                  <div className="flex items-center gap-3">
-                    <div className="bg-primary px-2 py-1 rounded text-[10px] font-black text-primary-foreground uppercase tracking-widest">
-                      Juego {gameNumber}
+                <div className="flex justify-between items-start pb-2 border-b border-primary/5">
+                  <div className="flex flex-col gap-2">
+                    <div className="flex items-center gap-3">
+                      <div className="bg-primary px-2 py-1 rounded text-[10px] font-black text-primary-foreground uppercase tracking-widest">
+                        Juego {gameNumber}
+                      </div>
+                      {game.time && !isSuspended && (
+                        <span className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">{game.time}</span>
+                      )}
                     </div>
-                    {game.time && (
-                      <span className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">{game.time}</span>
+                    {isSuspended && (
+                      <div className="flex items-center gap-1.5 px-2 py-1.5 rounded-md bg-destructive/10 border border-destructive/20 text-red-400 text-[10px] font-black uppercase tracking-widest w-fit">
+                        <AlertTriangle className="h-3.5 w-3.5 shrink-0" />
+                        <span>PARTIDO CANCELADO: No se disputó debido a las inclemencias del clima</span>
+                      </div>
                     )}
                   </div>
-                  <span className="text-[9px] font-black text-muted-foreground/60 text-right uppercase tracking-wider">Estadio Mundialista ‘Ing Nafaldo Cargnel’</span>
+                  <span className="text-[9px] font-black text-muted-foreground/60 text-right uppercase tracking-wider mt-1 shrink-0 ml-4 max-w-[120px] sm:max-w-none">Estadio Mundialista ‘Ing Nafaldo Cargnel’</span>
                 </div>
 
                 <div className="grid grid-cols-[1fr_3.5rem_3.5rem_3.5rem] gap-x-3 gap-y-3 items-center">
@@ -149,7 +176,7 @@ export default function ScheduleCard({
 
                   {/* Visiting Team */}
                   <div className={cn(
-                    "p-3 text-sm font-bold rounded-xl transition-all uppercase tracking-tight",
+                    "p-3 text-sm rounded-xl transition-all uppercase tracking-tight",
                     team1Wins ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20" : "bg-background/50 border border-primary/5"
                   )}>
                     {getTeamPlaceholder(game, 1)}
@@ -195,7 +222,7 @@ export default function ScheduleCard({
 
                   {/* Local Team */}
                   <div className={cn(
-                    "p-3 text-sm font-bold rounded-xl transition-all uppercase tracking-tight",
+                    "p-3 text-sm rounded-xl transition-all uppercase tracking-tight",
                     team2Wins ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20" : "bg-background/50 border border-primary/5"
                   )}>
                     {getTeamPlaceholder(game, 2)}
