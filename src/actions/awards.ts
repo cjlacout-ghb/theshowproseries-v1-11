@@ -79,9 +79,67 @@ export async function importAwardsFromTxt(txtData: string, token?: string) {
 
     for (let i = 0; i < lines.length; i++) {
         const line = lines[i];
+        
+        // --- NEW PIPE-SEPARATED FORMAT SUPPORT ---
+        // Format: CATEGORIA | TITULO | JUGADOR | EQUIPO | DESC
+        if (line.includes('|')) {
+            const parts = line.split('|').map(p => p.trim());
+            if (parts.length >= 2) {
+                const categoryRaw = parts[0].toUpperCase();
+                const titleRaw = parts[1].toUpperCase();
+
+                // Map category
+                let category: 'ronda_inicial' | 'partido_final' = 'ronda_inicial';
+                if (categoryRaw.includes('FINAL') || categoryRaw.includes('JUEGO 16')) {
+                    category = 'partido_final';
+                }
+
+                // Map title to canonical version
+                let canonicalTitle = parts[1];
+                if (titleRaw.includes(KEY_BATEADOR)) canonicalTitle = "MEJOR BATEADOR DEL TORNEO";
+                else if (titleRaw.includes(KEY_LANZADOR)) canonicalTitle = "LANZADOR DESTACADO";
+                else if (titleRaw.includes(KEY_MVP)) canonicalTitle = "JUGADOR MVP";
+                else if (titleRaw.includes(KEY_ALL_STAR) || titleRaw.includes(KEY_EQUIPO_IDEAL)) canonicalTitle = "ALL THE SHOW TEAM";
+
+                let descriptionVal = parts[4] || "";
+
+                // If it's a team award, we might have multiple lines below without pipes
+                if (canonicalTitle === "ALL THE SHOW TEAM") {
+                     const players: string[] = [];
+                     if (descriptionVal) players.push(descriptionVal);
+                     
+                     let j = i + 1;
+                     while (j < lines.length) {
+                         const nextLine = lines[j];
+                         if (nextLine.includes('|')) break; // Next award
+                         if (nextLine.toUpperCase().startsWith('SECTION:')) break;
+                         if (!nextLine.toUpperCase().startsWith('//')) {
+                             players.push(nextLine);
+                         }
+                         j++;
+                     }
+                     descriptionVal = players.join('\n');
+                     i = j - 1; // Advance loop
+                } else if (!descriptionVal) {
+                    descriptionVal = "Sin descripción";
+                }
+
+                awards.push({
+                    category,
+                    title: canonicalTitle,
+                    player_name: parts[2] || (canonicalTitle === "ALL THE SHOW TEAM" ? "EQUIPO IDEAL" : "Por Determinar"),
+                    team_name: parts[3] || (canonicalTitle === "ALL THE SHOW TEAM" ? "SELECCIÓN DEL TORNEO" : "N/A"),
+                    description: descriptionVal,
+                    updated_at: new Date().toISOString()
+                });
+                console.log(`[IMPORT] Captured Pipe Format: ${canonicalTitle} -> ${parts[2]}`);
+                continue; // Skip the rest of the loop for this line
+            }
+        }
+
         const upperLine = line.toUpperCase();
 
-        // 1. Context Switching (Sections that are NOT awards)
+        // 1. Context Switching (Sections for tag-based format)
         if (upperLine.includes('PREMIOS_PARTIDO_FINAL') || upperLine.includes('JUEGO 16')) {
             currentCategory = 'partido_final';
             console.log(`[IMPORT] Context switched to: ${currentCategory}`);
@@ -93,23 +151,23 @@ export async function importAwardsFromTxt(txtData: string, token?: string) {
             continue;
         }
 
-        // 2. Identifying Awards
+        // 2. Identifying Awards (Tag-based)
         let canonicalTitle = "";
         let isTeam = false;
 
-        // Check for Team Award Trigger (matches exact keywords in line)
+        // Check for Team Award Trigger
         if (upperLine.includes(KEY_ALL_STAR) || upperLine.includes(KEY_EQUIPO_IDEAL)) {
             canonicalTitle = "ALL THE SHOW TEAM";
             isTeam = true;
         }
-        // Check for Individual Awards (Must start with PREMIO: to avoid false positives)
+        // Check for Individual Awards
         else if (upperLine.startsWith('PREMIO:')) {
             if (upperLine.includes(KEY_BATEADOR)) canonicalTitle = "MEJOR BATEADOR DEL TORNEO";
             else if (upperLine.includes(KEY_LANZADOR)) canonicalTitle = "LANZADOR DESTACADO";
             else if (upperLine.includes(KEY_MVP)) canonicalTitle = "JUGADOR MVP";
         }
 
-        // 3. Process Award if identified
+        // 3. Process Award if identified (Tag-based)
         if (canonicalTitle) {
             console.log(`[IMPORT] Found Award Header: ${canonicalTitle} (Line: ${line})`);
 
@@ -119,16 +177,8 @@ export async function importAwardsFromTxt(txtData: string, token?: string) {
                 while (j < lines.length) {
                     const nextLine = lines[j];
                     const nextUpper = nextLine.toUpperCase();
-
-                    // Stop conditions: Next Section or Next Award Header
-                    if (nextUpper.startsWith('SECTION:') || nextUpper.startsWith('PREMIO:')) {
-                        break;
-                    }
-
-                    // Filter noise
-                    if (!nextUpper.startsWith('//') && nextUpper.length > 2) {
-                        players.push(nextLine);
-                    }
+                    if (nextUpper.startsWith('SECTION:') || nextUpper.startsWith('PREMIO:') || nextLine.includes('|')) break;
+                    if (!nextUpper.startsWith('//') && nextUpper.length > 2) players.push(nextLine);
                     j++;
                 }
 
@@ -141,14 +191,10 @@ export async function importAwardsFromTxt(txtData: string, token?: string) {
                         description: players.join('\n'),
                         updated_at: new Date().toISOString()
                     });
-                    console.log(`[IMPORT] Captured ${players.length} players for Team Award.`);
-                    i = j - 1; // Advance main loop
-                } else {
-                    console.warn(`[IMPORT] Team award header found but no players captured.`);
+                    i = j - 1;
                 }
             }
             else {
-                // Individual Award Parsing
                 let playerName = "";
                 let teamName = "";
                 let description = "";
@@ -157,15 +203,10 @@ export async function importAwardsFromTxt(txtData: string, token?: string) {
                 while (j < lines.length) {
                     const nextLine = lines[j];
                     const nextUpper = nextLine.toUpperCase();
-
-                    if (nextUpper.startsWith('SECTION:') || nextUpper.startsWith('PREMIO:')) {
-                        break;
-                    }
-
+                    if (nextUpper.startsWith('SECTION:') || nextUpper.startsWith('PREMIO:') || nextLine.includes('|')) break;
                     if (nextUpper.startsWith('GANADOR:')) playerName = nextLine.substring(8).trim();
                     else if (nextUpper.startsWith('EQUIPO:')) teamName = nextLine.substring(7).trim();
                     else if (nextUpper.startsWith('ESTADÍSTICAS:')) description = nextLine.substring(13).trim();
-
                     j++;
                 }
 
@@ -177,7 +218,6 @@ export async function importAwardsFromTxt(txtData: string, token?: string) {
                     description: description || "Sin descripción",
                     updated_at: new Date().toISOString()
                 });
-                console.log(`[IMPORT] Captured Individual Award: ${canonicalTitle} -> ${playerName}`);
                 i = j - 1;
             }
         }

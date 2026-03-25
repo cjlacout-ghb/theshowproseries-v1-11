@@ -328,7 +328,6 @@ export default function AwardsSection({ isAdmin }: AwardsSectionProps) {
                 </div>
 
                 <div className="grid grid-cols-1 gap-6">
-                    {renderAward('partido_final', 'LANZADOR DESTACADO', 'Se premia al pitcher con la actuación más sobresaliente del juego final.')}
                     {renderAward('partido_final', 'JUGADOR MVP', 'Se otorga al atleta más determinante del juego final.')}
                 </div>
             </section>

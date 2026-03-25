@@ -86,20 +86,20 @@ export function parseGameStats(text: string): ParsedGameData {
                     // Batter columns: # [0], NAME [1...N-statCount], STATS [...]
                     // The spec says: #, Nombre, PA, AB, R, H, 2B, 3B, HR, RBI, BB, SO, SB (13 columns)
                     // The code before expected 14 stats. Let's make it flexible.
-                    
+
                     // Possible STATS columns in order:
                     // PA, AB, R, H, 2B, 3B, HR, RBI, BB, [HBP], [SH], [SF], SO, SB
-                    
+
                     const number = parseInt(parts[0]);
                     // Last 2 columns are usually SO, SB
                     const sb = parseInt(parts[parts.length - 1]) || 0;
                     const so = parseInt(parts[parts.length - 2]) || 0;
-                    
+
                     // First 9 stats after name: PA, AB, R, H, 2B, 3B, HR, RBI, BB
                     // Let's find where Name ends. We assume at least 11 columns total.
                     // If we have 13 columns total: # (1), Name (1), Stats (11)
                     // Stats: PA, AB, R, H, 2B, 3B, HR, RBI, BB, SO, SB
-                    
+
                     const isStandard13 = parts.length === 13;
                     const nameEndIndex = isStandard13 ? 2 : (parts.length - 11); // Fallback logic
                     const name = parts.slice(1, nameEndIndex).join(', ');
@@ -136,7 +136,7 @@ export function parseGameStats(text: string): ParsedGameData {
                     // Pitcher has 12 standard columns in spec, but lets be flexible
                     // Columns: # [0], NAME [1...N-10], STATS [N-10 ... N-1]
                     // StatCount is usually 10: IP, H, R, ER, BB, SO, HR, W, L, S
-                    const statCount = 10; 
+                    const statCount = 10;
                     const nameEndIndex = parts.length - statCount;
                     const name = parts.slice(1, nameEndIndex).join(', ');
                     const stats = parts.slice(nameEndIndex);
