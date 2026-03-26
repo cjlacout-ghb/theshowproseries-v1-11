@@ -10,7 +10,7 @@ export default function TournamentHeader({ visible = true }: TournamentHeaderPro
     if (!visible) return null;
 
     return (
-        <header className="mb-6 flex flex-col md:flex-row items-stretch justify-start gap-4 md:gap-12 transition-all duration-700 animate-in fade-in slide-in-from-top-8">
+        <header className="mb-10 pt-16 md:pt-32 flex flex-col md:flex-row items-stretch justify-start gap-4 md:gap-12 transition-all duration-700 animate-in fade-in slide-in-from-top-12">
             <Image
                 src="/images/logo.png"
                 alt="The Show Pro Series Logo"

@@ -26,7 +26,7 @@ export default function TournamentFooter({ onReset, isAdmin = false }: Tournamen
     return (
         <footer className="mt-auto py-10 flex flex-col items-center justify-center gap-6 text-center bg-gradient-to-t from-primary/5 to-transparent border-t border-primary/10">
             <div className="flex flex-col items-center gap-6">
-                <div className="relative">
+                <div className="relative -mt-24 md:-mt-32 mb-12">
                     <Image
                         src="/images/sponsor-logo.png"
                         alt="Developer Branding"
