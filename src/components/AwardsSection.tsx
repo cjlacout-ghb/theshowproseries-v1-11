@@ -109,10 +109,28 @@ export default function AwardsSection({ isAdmin }: AwardsSectionProps) {
     const renderAward = (category: 'ronda_inicial' | 'partido_final', title: string, defaultDesc: string) => {
         const award = awards.find(a => a.category === category && a.title === title);
 
-        // Debug fallback
+        // Loading state
+        if (loading) {
+            return (
+                <div key={`${category}-${title}-loading`} className="p-6 rounded-2xl bg-zinc-900/30 border border-primary/5 animate-pulse min-h-[140px] flex items-center gap-6 mb-4">
+                    <div className="w-16 h-16 rounded-xl bg-primary/10 flex items-center justify-center">
+                        <Trophy className="w-8 h-8 text-primary/20" />
+                    </div>
+                    <div className="flex-1 space-y-4">
+                        <div className="h-6 bg-primary/10 rounded-md w-[40%]" />
+                        <div className="space-y-2">
+                            <div className="h-4 bg-primary/5 rounded-md w-[60%]" />
+                            <div className="h-3 bg-primary/5 rounded-md w-[30%]" />
+                        </div>
+                    </div>
+                </div>
+            )
+        }
+
+        // Admin fallback only if not loading
         if (!award && isAdmin) {
             return (
-                <div className="p-4 border border-red-500/50 rounded-xl bg-red-500/10 mb-4">
+                <div key={`${category}-${title}-error`} className="p-4 border border-red-500/50 rounded-xl bg-red-500/10 mb-4 animate-in fade-in duration-500">
                     <p className="text-red-400 font-bold text-xs uppercase">Datos no encontrados</p>
                     <p className="text-red-300 text-[10px]">Buscando: {title} ({category})</p>
                 </div>
