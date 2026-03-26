@@ -27,6 +27,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { TrophyIcon } from "./icons";
 
 type StandingsTableProps = {
   standings: Standing[];
@@ -222,11 +223,11 @@ export default function StandingsTable({
                 <div className="absolute inset-0 bg-gradient-to-r from-amber-600 via-yellow-400 to-amber-600 opacity-95" />
                 <div className="relative py-6 px-4 flex flex-col items-center justify-center gap-3 text-center backdrop-blur-sm">
                   <div className="flex items-center gap-6">
-                    <span className="text-2xl drop-shadow-lg">🏆</span>
+                    <TrophyIcon className="w-8 h-8 text-zinc-950 drop-shadow-lg" />
                     <span className="text-zinc-950 text-2xl md:text-3xl font-black uppercase tracking-tighter drop-shadow-sm">
                       {champion}
                     </span>
-                    <span className="text-2xl drop-shadow-lg">🏆</span>
+                    <TrophyIcon className="w-8 h-8 text-zinc-950 drop-shadow-lg" />
                   </div>
                   <div className="flex flex-col items-center gap-1">
                     <h3 className="text-zinc-950 text-[11px] md:text-xs font-black uppercase tracking-[0.3em] drop-shadow-sm whitespace-nowrap">
@@ -250,11 +251,11 @@ export default function StandingsTable({
                     <div className="absolute inset-0 bg-gradient-to-r from-amber-600 via-yellow-400 to-amber-600 opacity-95 group-hover:opacity-100 transition-opacity" />
                     <div className="relative py-6 px-4 flex flex-col items-center justify-center gap-3 text-center backdrop-blur-sm">
                       <div className="flex items-center gap-6">
-                        <span className="text-2xl drop-shadow-lg animate-bounce">🏆</span>
+                        <TrophyIcon className="w-10 h-10 text-zinc-950 drop-shadow-lg animate-bounce" />
                         <span className="text-zinc-950 text-2xl md:text-3xl font-black uppercase tracking-tighter drop-shadow-sm">
                           {champion}
                         </span>
-                        <span className="text-2xl drop-shadow-lg animate-bounce">🏆</span>
+                        <TrophyIcon className="w-10 h-10 text-zinc-950 drop-shadow-lg animate-bounce" />
                       </div>
                       <div className="flex flex-col items-center gap-1">
                         <h3 className="text-zinc-950 text-[11px] md:text-xs font-black uppercase tracking-[0.3em] drop-shadow-sm whitespace-nowrap">

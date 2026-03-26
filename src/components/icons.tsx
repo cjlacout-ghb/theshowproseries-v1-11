@@ -34,9 +34,6 @@ export const TrophyIcon = (props: SVGProps<SVGSVGElement>) => (
     <path d="M4 22h16" />
     <path d="M10 14.66V17c0 .55-.47.98-.97 1.21A3.98 3.98 0 0 1 8 19.95V22" />
     <path d="M14 14.66V17c0 .55.47.98.97 1.21A3.98 3.98 0 0 0 16 19.95V22" />
-    <path d="M8 4h8" />
-    <path d="M8 9a5 5 0 0 1 8 0" />
-    <path d="M12 15a3 3 0 0 1-3-3V9" />
-    <path d="M15 9v3a3 3 0 0 1-3 3" />
+    <path d="M18 2H6v7a6 6 0 0 0 12 0V2Z" />
   </svg>
 );
