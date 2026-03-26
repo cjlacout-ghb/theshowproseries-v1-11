@@ -79,65 +79,72 @@ export async function importAwardsFromTxt(txtData: string, token?: string) {
 
     for (let i = 0; i < lines.length; i++) {
         const line = lines[i];
+        const upperLine = line.toUpperCase();
         
+        // Helper to determine if a line is a pipe-separated award header
+        const isPipeCategoryHeader = (text: string) => {
+            if (!text.includes('|')) return false;
+            const cat = text.split('|')[0].trim().toUpperCase();
+            return cat.includes('RONDA_INICIAL') || cat.includes('PARTIDO_FINAL') || cat.includes('JUEGO 16');
+        };
+
         // --- NEW PIPE-SEPARATED FORMAT SUPPORT ---
         // Format: CATEGORIA | TITULO | JUGADOR | EQUIPO | DESC
-        if (line.includes('|')) {
+        if (isPipeCategoryHeader(line)) {
             const parts = line.split('|').map(p => p.trim());
-            if (parts.length >= 2) {
-                const categoryRaw = parts[0].toUpperCase();
-                const titleRaw = parts[1].toUpperCase();
+            const categoryRaw = parts[0].toUpperCase();
+            const titleRaw = parts[1].toUpperCase();
 
-                // Map category
-                let category: 'ronda_inicial' | 'partido_final' = 'ronda_inicial';
-                if (categoryRaw.includes('FINAL') || categoryRaw.includes('JUEGO 16')) {
-                    category = 'partido_final';
-                }
-
-                // Map title to canonical version
-                let canonicalTitle = parts[1];
-                if (titleRaw.includes(KEY_BATEADOR)) canonicalTitle = "MEJOR BATEADOR DEL TORNEO";
-                else if (titleRaw.includes(KEY_LANZADOR)) canonicalTitle = "LANZADOR DESTACADO";
-                else if (titleRaw.includes(KEY_MVP)) canonicalTitle = "JUGADOR MVP";
-                else if (titleRaw.includes(KEY_ALL_STAR) || titleRaw.includes(KEY_EQUIPO_IDEAL)) canonicalTitle = "ALL THE SHOW TEAM";
-
-                let descriptionVal = parts[4] || "";
-
-                // If it's a team award, we might have multiple lines below without pipes
-                if (canonicalTitle === "ALL THE SHOW TEAM") {
-                     const players: string[] = [];
-                     if (descriptionVal) players.push(descriptionVal);
-                     
-                     let j = i + 1;
-                     while (j < lines.length) {
-                         const nextLine = lines[j];
-                         if (nextLine.includes('|')) break; // Next award
-                         if (nextLine.toUpperCase().startsWith('SECTION:')) break;
-                         if (!nextLine.toUpperCase().startsWith('//')) {
-                             players.push(nextLine);
-                         }
-                         j++;
-                     }
-                     descriptionVal = players.join('\n');
-                     i = j - 1; // Advance loop
-                } else if (!descriptionVal) {
-                    descriptionVal = "Sin descripción";
-                }
-
-                awards.push({
-                    category,
-                    title: canonicalTitle,
-                    player_name: parts[2] || (canonicalTitle === "ALL THE SHOW TEAM" ? "EQUIPO IDEAL" : "Por Determinar"),
-                    team_name: parts[3] || (canonicalTitle === "ALL THE SHOW TEAM" ? "SELECCIÓN DEL TORNEO" : "N/A"),
-                    description: descriptionVal,
-                    updated_at: new Date().toISOString()
-                });
-                console.log(`[IMPORT] Captured Pipe Format: ${canonicalTitle} -> ${parts[2]}`);
-                continue; // Skip the rest of the loop for this line
+            // Map category
+            let category: 'ronda_inicial' | 'partido_final' = 'ronda_inicial';
+            if (categoryRaw.includes('FINAL') || categoryRaw.includes('JUEGO 16')) {
+                category = 'partido_final';
             }
-        }
 
-        const upperLine = line.toUpperCase();
+            // Map title to canonical version
+            let canonicalTitle = parts[1];
+            if (titleRaw.includes(KEY_BATEADOR)) canonicalTitle = "MEJOR BATEADOR DEL TORNEO";
+            else if (titleRaw.includes(KEY_LANZADOR)) canonicalTitle = "LANZADOR DESTACADO";
+            else if (titleRaw.includes(KEY_MVP)) canonicalTitle = "JUGADOR MVP";
+            else if (titleRaw.includes(KEY_ALL_STAR) || titleRaw.includes(KEY_EQUIPO_IDEAL)) canonicalTitle = "ALL THE SHOW TEAM";
+
+            let descriptionVal = parts[4] || "";
+
+            // If it's a team award, we might have multiple lines below
+            if (canonicalTitle === "ALL THE SHOW TEAM") {
+                 const players: string[] = [];
+                 if (descriptionVal) players.push(descriptionVal);
+                 
+                 let j = i + 1;
+                 while (j < lines.length) {
+                     const nextLine = lines[j];
+                     const nextUpper = nextLine.toUpperCase();
+                     
+                     if (isPipeCategoryHeader(nextLine)) break; // Next pipe award
+                     if (nextUpper.includes('PREMIOS_') || nextUpper.startsWith('SECTION:') || nextUpper.startsWith('PREMIO:')) break; // Next tag award
+                     
+                     if (!nextUpper.startsWith('//') && nextLine.trim() !== '') {
+                         players.push(nextLine);
+                     }
+                     j++;
+                 }
+                 descriptionVal = players.join('\n');
+                 i = j - 1; // Advance loop
+            } else if (!descriptionVal) {
+                descriptionVal = "Sin descripción";
+            }
+
+            awards.push({
+                category,
+                title: canonicalTitle,
+                player_name: parts[2] || (canonicalTitle === "ALL THE SHOW TEAM" ? "EQUIPO IDEAL" : "Por Determinar"),
+                team_name: parts[3] || (canonicalTitle === "ALL THE SHOW TEAM" ? "SELECCIÓN DEL TORNEO" : "N/A"),
+                description: descriptionVal,
+                updated_at: new Date().toISOString()
+            });
+            console.log(`[IMPORT] Captured Pipe Format: ${canonicalTitle} -> ${parts[2]}`);
+            continue; // Skip the rest of the loop for this line
+        }
 
         // 1. Context Switching (Sections for tag-based format)
         if (upperLine.includes('PREMIOS_PARTIDO_FINAL') || upperLine.includes('JUEGO 16')) {
@@ -177,8 +184,8 @@ export async function importAwardsFromTxt(txtData: string, token?: string) {
                 while (j < lines.length) {
                     const nextLine = lines[j];
                     const nextUpper = nextLine.toUpperCase();
-                    if (nextUpper.startsWith('SECTION:') || nextUpper.startsWith('PREMIO:') || nextLine.includes('|')) break;
-                    if (!nextUpper.startsWith('//') && nextUpper.length > 2) players.push(nextLine);
+                    if (nextUpper.startsWith('SECTION:') || nextUpper.startsWith('PREMIO:') || isPipeCategoryHeader(nextLine)) break;
+                    if (!nextUpper.startsWith('//') && nextLine.trim() !== '') players.push(nextLine);
                     j++;
                 }
 
@@ -203,7 +210,7 @@ export async function importAwardsFromTxt(txtData: string, token?: string) {
                 while (j < lines.length) {
                     const nextLine = lines[j];
                     const nextUpper = nextLine.toUpperCase();
-                    if (nextUpper.startsWith('SECTION:') || nextUpper.startsWith('PREMIO:') || nextLine.includes('|')) break;
+                    if (nextUpper.startsWith('SECTION:') || nextUpper.startsWith('PREMIO:') || isPipeCategoryHeader(nextLine)) break;
                     if (nextUpper.startsWith('GANADOR:')) playerName = nextLine.substring(8).trim();
                     else if (nextUpper.startsWith('EQUIPO:')) teamName = nextLine.substring(7).trim();
                     else if (nextUpper.startsWith('ESTADÍSTICAS:')) description = nextLine.substring(13).trim();

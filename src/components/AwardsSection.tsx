@@ -201,9 +201,44 @@ export default function AwardsSection({ isAdmin }: AwardsSectionProps) {
                                         </span>
                                     </div>
                                 </div>
-                                <p className="text-xs font-medium text-muted-foreground/80 italic border-l-2 border-primary/10 pl-3 leading-relaxed whitespace-pre-line">
-                                    {award?.description || defaultDesc}
-                                </p>
+                                {title === 'ALL THE SHOW TEAM' && award?.description && award.description.includes('|') ? (
+                                    <div className="mt-8 w-full max-w-3xl bg-zinc-950/50 rounded-xl overflow-hidden border border-primary/10">
+                                        <div className="divide-y divide-primary/5">
+                                           {award.description.split('\n').filter(l => l.trim()).map((line, idx) => {
+                                              const parts = line.split('|').map(p => p.trim());
+                                              const equipo = parts.length > 1 ? parts[0] : '';
+                                              const jugador = parts.length > 1 ? parts[1] : line;
+                                              const posicion = parts.length > 2 ? parts[2] : '';
+                                              
+                                              return (
+                                                <div key={idx} className="px-5 py-4 flex items-center justify-between hover:bg-white/[0.02] transition-colors group">
+                                                    <div className="flex flex-col gap-1.5">
+                                                        <span className="font-black text-sm sm:text-base uppercase tracking-tighter text-primary group-hover:text-primary/90 transition-colors drop-shadow-sm">
+                                                            {jugador}
+                                                        </span>
+                                                        {equipo && (
+                                                            <span className="font-bold text-[10px] sm:text-[11px] uppercase tracking-widest text-muted-foreground/60">
+                                                                {equipo}
+                                                            </span>
+                                                        )}
+                                                    </div>
+                                                    {posicion && (
+                                                        <div className="opacity-70 group-hover:opacity-100 transition-opacity text-right">
+                                                            <span className="text-[10px] font-black text-white/50 uppercase tracking-[0.2em]">
+                                                                {posicion}
+                                                            </span>
+                                                        </div>
+                                                    )}
+                                                </div>
+                                              );
+                                           })}
+                                        </div>
+                                    </div>
+                                ) : (
+                                    <p className="mt-2 text-xs font-medium text-muted-foreground/80 italic border-l-2 border-primary/10 pl-3 leading-relaxed whitespace-pre-line">
+                                        {award?.description || defaultDesc}
+                                    </p>
+                                )}
                             </div>
                         )}
                     </div>
