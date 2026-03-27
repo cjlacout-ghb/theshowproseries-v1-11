@@ -1,8 +1,8 @@
 
-import { createClient } from '@supabase/supabase-js'
+import { createClient, type SupabaseClient } from '@supabase/supabase-js'
 import { supabase } from '@/lib/supabase'
 
-const ADMIN_EMAIL = "cjlacout.antigravity@gmail.com";
+export const ADMIN_EMAIL = "cjlacout.antigravity@gmail.com";
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://bqfcfqflodpewdssicak.supabase.co';
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'sb_publishable_2par32BiPa4FahajE_7vog_XbZ46--K';
 
@@ -24,7 +24,7 @@ export function getRequestClient(token?: string) {
     });
 }
 
-export async function verifyAdmin(client: any, _token?: string) {
+export async function verifyAdmin(client: SupabaseClient, _token?: string) {
     const { data: { user }, error } = await client.auth.getUser();
 
     if (error) {

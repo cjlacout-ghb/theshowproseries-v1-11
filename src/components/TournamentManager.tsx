@@ -1,15 +1,21 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
+import dynamic from 'next/dynamic';
 import type { Team, Game } from "@/lib/types";
-import TeamSetup from "@/components/team-setup";
-import ScheduleCard from "@/components/schedule-card";
-import StandingsTable from "@/components/standings-table";
+
+// Dynamic Imports for larger components to reduce initial bundle
+const TeamSetup = dynamic(() => import("@/components/team-setup"), { ssr: false });
+const ScheduleCard = dynamic(() => import("@/components/schedule-card"), { ssr: false });
+const StandingsTable = dynamic(() => import("@/components/standings-table"), { ssr: false });
+const LeaderBoard = dynamic(() => import("./LeaderBoard"), { ssr: false });
+const Confetti = dynamic(() => import("react-confetti"), { ssr: false });
+const AdminAuthPanel = dynamic(() => import("./AdminAuthPanel"), { ssr: false });
+
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { ArrowLeft } from "lucide-react";
-import Confetti from "react-confetti";
-import LeaderBoard from "./LeaderBoard";
+
 
 
 // New Hooks and Utilities
@@ -24,7 +30,6 @@ import {
     TournamentFooter,
     type ViewType
 } from "./tournament";
-import AdminAuthPanel from "./AdminAuthPanel";
 
 interface TournamentManagerProps {
     initialTeams: Team[];
@@ -85,7 +90,21 @@ export default function TournamentManager({ initialTeams, initialGames }: Tourna
     }, [champion, showConfetti, setShowConfetti]);
 
     return (
-        <div className="flex flex-col min-h-screen bg-background text-foreground">
+        <div className="flex flex-col min-h-screen bg-background text-foreground relative overflow-hidden">
+            {/* Fondo con efectos visuales y textura */}
+            <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
+                {/* Capa de ruido/textura */}
+                <div className="absolute inset-0 noise-bg" />
+                
+                {/* Degradado radial principal para foco y profundidad */}
+                <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_35%,_transparent_0%,_rgba(0,0,0,0.5)_100%)] opacity-80" />
+                
+                {/* Viñeta para mayor contraste en bordes */}
+                <div className="absolute inset-0 vignette-bg" />
+                
+                {/* Toque extra: degradado superior sutil */}
+                <div className="absolute inset-x-0 top-0 h-96 bg-gradient-to-b from-primary/5 to-transparent" />
+            </div>
             {showConfetti && (
                 <Confetti
                     recycle={false}
@@ -103,7 +122,7 @@ export default function TournamentManager({ initialTeams, initialGames }: Tourna
                 onLogout={logout}
             />
 
-            <main className="flex-1 container mx-auto p-4 md:p-8">
+            <main className="flex-1 container mx-auto p-4 md:p-8 relative z-10">
                 <TournamentHeader visible={currentView === 'menu'} />
 
                 {currentView === 'menu' ? (
@@ -208,13 +227,15 @@ export default function TournamentManager({ initialTeams, initialGames }: Tourna
             </main>
 
             {currentView === 'menu' && (
-                <TournamentFooter
-                    onReset={() => {
-                        console.log("[MANAGER] Footer called onReset");
-                        handleResetTournament();
-                    }}
-                    isAdmin={isAdmin}
-                />
+                <div className="relative z-10">
+                    <TournamentFooter
+                        onReset={() => {
+                            console.log("[MANAGER] Footer called onReset");
+                            handleResetTournament();
+                        }}
+                        isAdmin={isAdmin}
+                    />
+                </div>
             )}
         </div>
     );

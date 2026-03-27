@@ -62,7 +62,6 @@ export function useTournamentState({ initialTeams, initialGames, isAdmin }: UseT
     // Track auth session
     useEffect(() => {
         const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-            console.log("[AUTH] Session updated in useTournamentState:", session?.user?.email);
             authTokenRef.current = session?.access_token || null;
         });
 
@@ -198,6 +197,9 @@ export function useTournamentState({ initialTeams, initialGames, isAdmin }: UseT
                 clearTimeout(persistTimeoutRef.current);
             }
         };
+        // getAuthToken is intentionally omitted: auth state is managed via authTokenRef
+        // which is updated by the onAuthStateChange subscription, avoiding circular deps.
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [preliminaryGames, championshipGame, toast]);
 
     const handleGameChange = useCallback((
@@ -344,20 +346,12 @@ export function useTournamentState({ initialTeams, initialGames, isAdmin }: UseT
 
 
     const handleResetTournament = useCallback(async () => {
-        console.log("[HOOK] handleResetTournament triggered");
-        // Removed window.confirm as it was being suppressed/auto-cancelled in some environments
-
-        console.log("[HOOK] Reset proceeding to server...");
-
         const { dismiss: dismissLoading } = toast({
             title: "Procesando Reinicio",
             description: "Conectando con el servidor y verificando credenciales...",
         });
 
         try {
-            console.log("Initiating tournament reset...");
-
-            // 1. Get token with a local timeout to prevent hanging the UI
             const tokenPromise = getAuthToken();
             const timeoutPromise = new Promise((_, reject) =>
                 setTimeout(() => reject(new Error("Tiempo de espera agotado al verificar sesión. Reintenta.")), 8000)
@@ -417,8 +411,6 @@ export function useTournamentState({ initialTeams, initialGames, isAdmin }: UseT
     }, [toast, getAuthToken]);
 
     const handleResetGame = useCallback(async (gameId: number) => {
-        console.log(`[HOOK] handleResetGame triggered for game ${gameId}`);
-
         const { dismiss: dismissLoading } = toast({
             title: "Borrando Resultados",
             description: "Conectando con el servidor para limpiar datos del juego...",

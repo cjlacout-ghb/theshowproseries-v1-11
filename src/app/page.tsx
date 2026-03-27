@@ -4,7 +4,6 @@ import TournamentManager from '@/components/TournamentManager'
 export const dynamic = 'force-dynamic';
 
 export default async function Home() {
-  console.log('Rendering Home Page...');
   try {
     const teams = await getTeams()
     const games = await getGames()

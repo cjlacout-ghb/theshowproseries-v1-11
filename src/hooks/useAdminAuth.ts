@@ -3,8 +3,7 @@ import { useState, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 import type { User } from "@supabase/supabase-js";
-
-const ADMIN_EMAIL = "cjlacout.antigravity@gmail.com";
+import { ADMIN_EMAIL } from "@/lib/auth-utils";
 
 export function useAdminAuth() {
     const [user, setUser] = useState<User | null>(null);

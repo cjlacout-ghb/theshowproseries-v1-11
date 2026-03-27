@@ -31,7 +31,7 @@ export function BattingPanel({
             {isAdmin && (
                 <div className="flex items-center gap-4 mb-4">
                     <Select onValueChange={addBatter}>
-                        <SelectTrigger className="w-[300px] h-10 font-bold text-sm bg-background border-primary/20">
+                        <SelectTrigger className="w-full sm:w-[300px] h-11 sm:h-10 font-bold text-sm bg-background border-primary/20">
                             <SelectValue placeholder="AGREGAR BATEADOR..." />
                         </SelectTrigger>
                         <SelectContent>
@@ -65,8 +65,8 @@ export function BattingPanel({
                                                     #{player?.number} {player?.name}
                                                 </div>
                                                 {isAdmin && (
-                                                    <Button variant="ghost" size="sm" onClick={() => removeBatter(playerId)} className="h-8 w-8 p-0 text-muted-foreground hover:text-destructive hover:bg-destructive/5">
-                                                        <Trash2 className="w-4 h-4" />
+                                                    <Button variant="ghost" onClick={() => removeBatter(playerId)} className="h-11 w-11 sm:h-8 sm:w-8 p-0 text-muted-foreground hover:text-destructive hover:bg-destructive/5 border border-primary/10 sm:border-0 rounded-lg">
+                                                        <Trash2 className="w-5 h-5 sm:w-4 sm:h-4" />
                                                     </Button>
                                                 )}
                                             </div>
@@ -106,8 +106,8 @@ export function BattingPanel({
                                                     #{player?.number} {player?.name}
                                                 </div>
                                                 {isAdmin && (
-                                                    <Button variant="ghost" size="sm" onClick={() => removeBatter(playerId)} className="h-8 w-8 p-0 text-muted-foreground hover:text-destructive hover:bg-destructive/5">
-                                                        <Trash2 className="w-4 h-4" />
+                                                    <Button variant="ghost" onClick={() => removeBatter(playerId)} className="h-11 w-11 sm:h-8 sm:w-8 p-0 text-muted-foreground hover:text-destructive hover:bg-destructive/5 border border-primary/10 sm:border-0 rounded-lg">
+                                                        <Trash2 className="w-5 h-5 sm:w-4 sm:h-4" />
                                                     </Button>
                                                 )}
                                             </div>

@@ -43,7 +43,6 @@ export default function AwardsSection({ isAdmin }: AwardsSectionProps) {
         setLoading(true);
         try {
             const data = await getAwards();
-            console.log("Client Received Awards:", data);
             setAwards(data);
         } catch (error) {
             console.error("Failed to load awards", error);
@@ -140,7 +139,7 @@ export default function AwardsSection({ isAdmin }: AwardsSectionProps) {
         const isEditing = editingId === (award?.id || -1) || (editingId === 0 && !award && editForm.title === title);
 
         return (
-            <div key={`${category}-${title}`} className="relative group p-6 rounded-2xl bg-zinc-900/50 border border-primary/10 hover:border-primary/30 transition-all duration-500 overflow-hidden">
+            <div key={`${category}-${title}`} className="relative group p-4 sm:p-6 rounded-2xl bg-zinc-900/50 border border-primary/10 hover:border-primary/30 transition-all duration-500 overflow-hidden">
                 <div className="absolute top-0 left-0 w-1 h-full bg-primary/20 group-hover:bg-primary transition-colors" />
 
                 <div className="flex flex-col md:flex-row gap-6 items-start md:items-center">
@@ -229,7 +228,7 @@ export default function AwardsSection({ isAdmin }: AwardsSectionProps) {
                                               const posicion = parts.length > 2 ? parts[2] : '';
                                               
                                               return (
-                                                <div key={idx} className="px-5 py-4 flex items-center justify-between hover:bg-white/[0.02] transition-colors group">
+                                                <div key={idx} className="px-5 py-4 flex flex-col sm:flex-row sm:items-center justify-between hover:bg-white/[0.02] transition-colors group gap-2">
                                                     <div className="flex flex-col gap-1.5">
                                                         <span className="font-black text-sm sm:text-base uppercase tracking-tighter text-primary group-hover:text-primary/90 transition-colors drop-shadow-sm">
                                                             {jugador}
@@ -268,13 +267,12 @@ export default function AwardsSection({ isAdmin }: AwardsSectionProps) {
     return (
         <div className="space-y-12 py-4">
             {isAdmin && (
-                <div className="flex flex-col items-end gap-2 pr-2">
+                <div className="flex flex-row items-center justify-end gap-3 pr-2">
                     <Dialog open={isImportOpen} onOpenChange={setIsImportOpen}>
                         <DialogTrigger asChild>
                             <Button
                                 variant="outline"
-                                size="sm"
-                                className="bg-black/40 border-primary/40 hover:border-primary/60 hover:bg-primary/5 text-white font-black uppercase tracking-widest text-[11px] h-10 px-5 rounded-xl transition-all shadow-2xl border-2 group/btn gap-2"
+                                className="bg-black/40 border-primary/40 hover:border-primary/60 hover:bg-primary/5 text-white font-black uppercase tracking-widest text-[11px] h-11 sm:h-10 px-5 rounded-xl transition-all shadow-2xl border-2 group/btn gap-2"
                             >
                                 <Upload className="w-4 h-4 text-white group-hover/btn:scale-110 transition-transform" />
                                 IMPORTAR TXT
@@ -312,17 +310,12 @@ export default function AwardsSection({ isAdmin }: AwardsSectionProps) {
                             </DialogFooter>
                         </DialogContent>
                     </Dialog>
-                </div>
-            )}
 
-            {isAdmin && (
-                <div className="flex flex-col items-end gap-2 pr-2 mt-2">
                     <Dialog open={isDeleteConfirmOpen} onOpenChange={setIsDeleteConfirmOpen}>
                         <DialogTrigger asChild>
                             <Button
                                 variant="outline"
-                                size="sm"
-                                className="bg-red-500/10 border-red-500/20 hover:bg-red-500/20 text-red-400 font-black uppercase tracking-widest text-[11px] h-10 px-5 rounded-xl transition-all shadow-2xl border-2 gap-2"
+                                className="bg-red-500/10 border-red-500/20 hover:bg-red-500/20 text-red-400 font-black uppercase tracking-widest text-[11px] h-11 sm:h-10 px-5 rounded-xl transition-all shadow-2xl border-2 gap-2"
                             >
                                 <Trash2 className="w-4 h-4" />
                                 BORRAR PREMIOS

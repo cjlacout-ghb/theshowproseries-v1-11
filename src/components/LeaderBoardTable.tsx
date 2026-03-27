@@ -44,7 +44,7 @@ export default function LeaderBoardTable<T extends LeaderRowData>({
     };
 
     return (
-        <div className="rounded-xl border border-primary/10 bg-background/50 overflow-hidden shadow-inner">
+        <div className="rounded-xl border border-primary/10 bg-background/50 overflow-x-auto shadow-inner">
             <Table>
                 <TableHeader className="bg-primary/[0.03]">
                     <TableRow className="border-b border-primary/10 hover:bg-transparent">

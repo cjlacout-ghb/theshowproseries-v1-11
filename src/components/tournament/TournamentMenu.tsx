@@ -99,18 +99,18 @@ export default function TournamentMenu({ onNavigate }: TournamentMenuProps) {
                     </Button>
                 </DialogTrigger>
                 <DialogContent className="max-w-5xl w-[95vw] h-[85vh] bg-zinc-950 border-primary/20 p-0 overflow-hidden flex flex-col">
-                    <DialogHeader className="p-6 pb-4 border-b border-primary/10 flex flex-row items-center justify-between space-y-0">
-                        <DialogTitle className="text-2xl font-black uppercase tracking-tighter flex items-center gap-3 text-primary">
-                            <Calendar className="w-6 h-6" />
+                    <DialogHeader className="p-4 sm:p-6 pb-4 border-b border-primary/10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 sm:gap-0 space-y-0">
+                        <DialogTitle className="text-xl sm:text-2xl font-black uppercase tracking-tighter flex items-center gap-3 text-primary pr-10 sm:pr-0">
+                            <Calendar className="w-5 h-5 sm:w-6 sm:h-6" />
                             Detalle de Partidos
                         </DialogTitle>
-                        <div className="flex items-center gap-2 pr-8">
+                        <div className="flex items-center gap-2 pr-2 sm:pr-8 w-full sm:w-auto justify-end sm:justify-start">
                             <Button
                                 variant="outline"
                                 size="icon"
                                 onClick={handleZoomOut}
                                 disabled={zoom <= 1}
-                                className="h-8 w-8 bg-zinc-900 border-primary/20 text-primary hover:bg-primary hover:text-primary-foreground"
+                                className="h-9 w-9 sm:h-8 sm:w-8 bg-zinc-900 border-primary/20 text-primary hover:bg-primary hover:text-primary-foreground"
                             >
                                 <ZoomOut className="w-4 h-4" />
                             </Button>
@@ -122,7 +122,7 @@ export default function TournamentMenu({ onNavigate }: TournamentMenuProps) {
                                 size="icon"
                                 onClick={handleZoomIn}
                                 disabled={zoom >= 3}
-                                className="h-8 w-8 bg-zinc-900 border-primary/20 text-primary hover:bg-primary hover:text-primary-foreground"
+                                className="h-9 w-9 sm:h-8 sm:w-8 bg-zinc-900 border-primary/20 text-primary hover:bg-primary hover:text-primary-foreground"
                             >
                                 <ZoomIn className="w-4 h-4" />
                             </Button>
@@ -130,7 +130,7 @@ export default function TournamentMenu({ onNavigate }: TournamentMenuProps) {
                                 variant="outline"
                                 size="icon"
                                 onClick={handleReset}
-                                className="h-8 w-8 bg-zinc-900 border-primary/20 text-primary hover:bg-primary hover:text-primary-foreground"
+                                className="h-9 w-9 sm:h-8 sm:w-8 bg-zinc-900 border-primary/20 text-primary hover:bg-primary hover:text-primary-foreground"
                             >
                                 <RotateCcw className="w-4 h-4" />
                             </Button>

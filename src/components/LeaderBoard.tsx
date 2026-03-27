@@ -1,5 +1,6 @@
 "use client";
 
+import { useMemo } from "react";
 import type { Game, Team } from "@/lib/types";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
@@ -20,13 +21,30 @@ interface LeaderBoardProps {
 }
 
 export default function LeaderBoard({ games, teams, isAdmin }: LeaderBoardProps) {
-    const preliminaryGames = games.filter(g => !g.isChampionship && g.id !== 16);
-    // ... rest of logic remains same ...
-    const teamGamesPlayed = calculateTeamGamesPlayed(preliminaryGames, teams);
-    const playerStats = aggregatePlayerStats(preliminaryGames, teams);
+    const preliminaryGames = useMemo(
+        () => games.filter(g => !g.isChampionship && g.id !== 16),
+        [games]
+    );
 
-    const battingLeaders = getBattingLeaders(playerStats, teamGamesPlayed);
-    const pitchingLeaders = getPitchingLeaders(playerStats, teamGamesPlayed);
+    const teamGamesPlayed = useMemo(
+        () => calculateTeamGamesPlayed(preliminaryGames, teams),
+        [preliminaryGames, teams]
+    );
+
+    const playerStats = useMemo(
+        () => aggregatePlayerStats(preliminaryGames, teams),
+        [preliminaryGames, teams]
+    );
+
+    const battingLeaders = useMemo(
+        () => getBattingLeaders(playerStats, teamGamesPlayed),
+        [playerStats, teamGamesPlayed]
+    );
+
+    const pitchingLeaders = useMemo(
+        () => getPitchingLeaders(playerStats, teamGamesPlayed),
+        [playerStats, teamGamesPlayed]
+    );
 
     const battingColumns = [
         { key: 'rank' as const, label: '' },
@@ -73,21 +91,21 @@ export default function LeaderBoard({ games, teams, isAdmin }: LeaderBoardProps)
             <TabsList className="flex w-full bg-primary/5 p-1 border border-primary/10 rounded-xl mb-8 items-center">
                 <TabsTrigger
                     value="ataque"
-                    className="flex-1 rounded-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground font-black uppercase tracking-widest text-[11px] py-3 transition-all"
+                    className="flex-1 rounded-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground font-black uppercase tracking-widest text-[11px] h-11 sm:h-10 transition-all"
                 >
                     BATEADORES
                 </TabsTrigger>
                 <div className="h-4 w-[1px] bg-primary/20 shrink-0" />
                 <TabsTrigger
                     value="pitcheo"
-                    className="flex-1 rounded-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground font-black uppercase tracking-widest text-[11px] py-3 transition-all"
+                    className="flex-1 rounded-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground font-black uppercase tracking-widest text-[11px] h-11 sm:h-10 transition-all"
                 >
                     LANZADORES
                 </TabsTrigger>
                 <div className="h-4 w-[1px] bg-primary/20 shrink-0" />
                 <TabsTrigger
                     value="premios"
-                    className="flex-1 rounded-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground font-black uppercase tracking-widest text-[11px] py-3 transition-all"
+                    className="flex-1 rounded-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground font-black uppercase tracking-widest text-[11px] h-11 sm:h-10 transition-all"
                 >
                     PREMIOS
                 </TabsTrigger>

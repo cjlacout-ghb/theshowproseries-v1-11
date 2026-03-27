@@ -18,12 +18,12 @@ const ChampionCard = forwardRef<HTMLDivElement, ChampionCardProps>(
                         <div className="p-4 rounded-full bg-primary/10 mb-4 animate-bounce">
                             <TrophyIcon className="w-20 h-20 text-primary drop-shadow-[0_0_15px_HSL(var(--primary))]" />
                         </div>
-                        <CardTitle className="text-4xl font-black uppercase tracking-tighter text-primary">
+                        <CardTitle className="text-3xl sm:text-4xl font-black uppercase tracking-tighter text-primary">
                             ¡EQUIPO CAMPEÓN!
                         </CardTitle>
                     </CardHeader>
                     <CardContent className="text-center relative z-10 pb-12">
-                        <p className="text-5xl md:text-6xl font-black tracking-[-0.03em] text-foreground uppercase drop-shadow-sm">
+                        <p className="text-4xl sm:text-5xl md:text-6xl font-black tracking-[-0.03em] text-foreground uppercase drop-shadow-sm">
                             {championName}
                         </p>
                         <div className="mt-6 flex justify-center">

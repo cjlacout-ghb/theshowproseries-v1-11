@@ -8,6 +8,8 @@ export const metadata: Metadata = {
   description: 'Resultados y Posiciones del Torneo The Show Pro Series',
 };
 
+import SplashScreen from '@/components/SplashScreen';
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -21,6 +23,7 @@ export default function RootLayout({
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
       </head>
       <body className="font-body antialiased" suppressHydrationWarning>
+        <SplashScreen />
         {children}
         <Toaster />
       </body>

@@ -214,37 +214,39 @@ export default function TeamSetup({ teams, openAccordion, setOpenAccordion, onNa
                               )}
                               <li className="px-4 py-3 flex items-center gap-3 group/item hover:bg-primary/5 transition-colors">
                                 {editingPlayerId === player.id ? (
-                                  <div className="flex items-center gap-2 w-full animate-in fade-in slide-in-from-left-2 duration-300">
+                                  <div className="grid grid-cols-2 sm:flex sm:items-center gap-2 w-full animate-in fade-in slide-in-from-left-2 duration-300">
                                     <Input
-                                      className="w-16 h-8 text-xs bg-background/50 font-bold border-primary/20 focus:border-primary"
+                                      className="h-11 sm:h-8 text-xs bg-background/50 font-bold border-primary/20 focus:border-primary"
                                       value={editForm.number}
                                       onChange={e => setEditForm({ ...editForm, number: e.target.value })}
                                       placeholder="#"
                                     />
                                     <Input
-                                      className="flex-1 h-8 text-xs bg-background/50 font-bold border-primary/20 focus:border-primary"
+                                      className="col-span-2 sm:flex-1 h-11 sm:h-8 text-xs bg-background/50 font-bold border-primary/20 focus:border-primary"
                                       value={editForm.name}
                                       onChange={e => setEditForm({ ...editForm, name: e.target.value })}
                                       placeholder="Nombre"
                                     />
                                     <Input
-                                      className="w-24 h-8 text-xs bg-background/50 border-primary/20 focus:border-primary"
+                                      className="h-11 sm:h-8 text-xs bg-background/50 border-primary/20 focus:border-primary"
                                       value={editForm.role}
                                       onChange={e => setEditForm({ ...editForm, role: e.target.value })}
                                       placeholder="Pos"
                                     />
                                     <Input
-                                      className="w-24 h-8 text-xs bg-background/50 border-primary/20 focus:border-primary"
+                                      className="h-11 sm:h-8 text-xs bg-background/50 border-primary/20 focus:border-primary"
                                       value={editForm.placeOfBirth}
                                       onChange={e => setEditForm({ ...editForm, placeOfBirth: e.target.value })}
                                       placeholder="País"
                                     />
-                                    <div className="flex gap-1">
-                                      <Button size="icon" variant="ghost" className="h-8 w-8 text-green-500 hover:text-green-400 hover:bg-green-500/10" onClick={handleSaveEdit}>
-                                        <Check className="h-4 w-4" />
+                                    <div className="flex gap-2 col-span-2 sm:col-auto sm:ml-auto">
+                                      <Button variant="ghost" className="flex-1 sm:h-8 sm:w-8 h-11 text-green-500 hover:text-green-400 hover:bg-green-500/10 border border-green-500/20 sm:border-0" onClick={handleSaveEdit}>
+                                        <Check className="h-5 w-5 sm:h-4 sm:w-4" />
+                                        <span className="sm:hidden ml-2 font-bold uppercase text-[10px]">Guardar</span>
                                       </Button>
-                                      <Button size="icon" variant="ghost" className="h-8 w-8 text-red-500 hover:text-red-400 hover:bg-red-500/10" onClick={handleCancelEdit}>
-                                        <X className="h-4 w-4" />
+                                      <Button variant="ghost" className="flex-1 sm:h-8 sm:w-8 h-11 text-red-500 hover:text-red-400 hover:bg-red-500/10 border border-red-500/20 sm:border-0" onClick={handleCancelEdit}>
+                                        <X className="h-5 w-5 sm:h-4 sm:w-4" />
+                                        <span className="sm:hidden ml-2 font-bold uppercase text-[10px]">Cancelar</span>
                                       </Button>
                                     </div>
                                   </div>
@@ -284,12 +286,11 @@ export default function TeamSetup({ teams, openAccordion, setOpenAccordion, onNa
                   )}
 
                   {isAdmin && (
-                    <div className="flex justify-start gap-4">
+                    <div className="flex flex-col sm:flex-row justify-start gap-4">
                       <Button
                         variant="outline"
-                        size="sm"
                         onClick={() => handleOpenImport(team)}
-                        className="gap-2 border-primary/20 hover:border-primary hover:bg-primary/5 text-[11px] font-bold uppercase tracking-wider"
+                        className="h-11 sm:h-9 w-full sm:w-auto gap-2 border-primary/20 hover:border-primary hover:bg-primary/5 text-[11px] font-bold uppercase tracking-wider"
                       >
                         <Upload className="h-3.5 w-3.5" />
                         Agregar Jugadores
@@ -298,8 +299,7 @@ export default function TeamSetup({ teams, openAccordion, setOpenAccordion, onNa
                         <AlertDialogTrigger asChild>
                           <Button
                             variant="destructive"
-                            size="sm"
-                            className="gap-2 text-[11px] font-bold uppercase tracking-wider bg-red-900/20 hover:bg-red-900/40 text-red-500 border border-red-900/50"
+                            className="h-11 sm:h-9 w-full sm:w-auto gap-2 text-[11px] font-bold uppercase tracking-wider bg-red-900/20 hover:bg-red-900/40 text-red-500 border border-red-900/50"
                           >
                             <Upload className="h-3.5 w-3.5" />
                             Reemplazar Roster
@@ -371,9 +371,9 @@ export default function TeamSetup({ teams, openAccordion, setOpenAccordion, onNa
               className="h-[250px] font-mono text-sm bg-background/50 border-primary/10 focus:border-primary ring-offset-transparent"
             />
           </div>
-          <DialogFooter className="gap-2 sm:gap-0">
-            <Button variant="ghost" onClick={() => setImportingTeam(null)} className="font-bold uppercase tracking-widest text-[10px]">Cancelar</Button>
-            <Button onClick={handleImport} disabled={isImporting || (!replaceMode && !csvData.trim())} className="font-bold uppercase tracking-widest text-[10px]">
+          <DialogFooter className="flex flex-col sm:flex-row gap-2 sm:gap-0 mt-4 sm:mt-0">
+            <Button variant="ghost" onClick={() => setImportingTeam(null)} className="h-11 sm:h-10 w-full sm:w-auto font-bold uppercase tracking-widest text-[10px]">Cancelar</Button>
+            <Button onClick={handleImport} disabled={isImporting || (!replaceMode && !csvData.trim())} className="h-11 sm:h-10 w-full sm:w-auto font-bold uppercase tracking-widest text-[10px]">
               {isImporting ? "Procesando..." : replaceMode && !csvData.trim() ? "Borrar Roster Actual" : "Confirmar Importación"}
             </Button>
           </DialogFooter>

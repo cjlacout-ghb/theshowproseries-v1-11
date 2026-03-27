@@ -105,8 +105,8 @@ export interface DBPlayer {
   number: number;
   role: string;
   place_of_birth: string;
-  batting_stats?: any[];
-  pitching_stats?: any[];
+  batting_stats?: Record<string, unknown>[];
+  pitching_stats?: Record<string, unknown>[];
 }
 
 export interface DBGame {
@@ -119,8 +119,8 @@ export interface DBGame {
   hits2: number | null;
   errors1: number | null;
   errors2: number | null;
-  innings: any[];
-  batting_stats?: any[];
-  pitching_stats?: any[];
-  is_championship?: boolean; // Sometimes inferred or extra column
+  innings: (string | number)[][];
+  batting_stats?: Record<string, unknown>[];
+  pitching_stats?: Record<string, unknown>[];
+  is_championship?: boolean;
 }

@@ -115,9 +115,9 @@ export function FeedbackDialog() {
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
                 <button
-                    className="group flex items-center gap-2 text-[10px] sm:text-xs text-muted-foreground/50 hover:text-primary transition-colors duration-300 uppercase tracking-widest"
+                    className="group flex items-center gap-2 text-[11px] sm:text-xs text-muted-foreground/50 hover:text-primary transition-colors duration-300 uppercase tracking-widest min-h-[44px] px-4 -ml-4"
                 >
-                    <MessageSquarePlus className="w-3 h-3 sm:w-4 sm:h-4 opacity-50 group-hover:opacity-100 transition-opacity" />
+                    <MessageSquarePlus className="w-4 h-4 opacity-50 group-hover:opacity-100 transition-opacity" />
                     <span>Reportar / Sugerencias</span>
                 </button>
             </DialogTrigger>
@@ -134,15 +134,15 @@ export function FeedbackDialog() {
 
                 <Form {...form}>
                     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 py-2">
-                        <div className="grid grid-cols-2 gap-4">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <FormField
                                 control={form.control}
                                 name="name"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel className="text-xs uppercase tracking-wider text-muted-foreground">Nombre</FormLabel>
+                                        <FormLabel className="text-sm font-bold uppercase tracking-wider text-muted-foreground">Nombre</FormLabel>
                                         <FormControl>
-                                            <Input placeholder="Tu Nombre" className="bg-secondary/20 border-primary/10" {...field} />
+                                            <Input placeholder="Tu Nombre" className="h-11 sm:h-10 bg-secondary/20 border-primary/10" {...field} />
                                         </FormControl>
                                         <FormMessage />
                                     </FormItem>
@@ -153,9 +153,9 @@ export function FeedbackDialog() {
                                 name="lastname"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel className="text-xs uppercase tracking-wider text-muted-foreground">Apellido</FormLabel>
+                                        <FormLabel className="text-sm font-bold uppercase tracking-wider text-muted-foreground">Apellido</FormLabel>
                                         <FormControl>
-                                            <Input placeholder="Tu Apellido" className="bg-secondary/20 border-primary/10" {...field} />
+                                            <Input placeholder="Tu Apellido" className="h-11 sm:h-10 bg-secondary/20 border-primary/10" {...field} />
                                         </FormControl>
                                         <FormMessage />
                                     </FormItem>
@@ -163,15 +163,15 @@ export function FeedbackDialog() {
                             />
                         </div>
 
-                        <div className="grid grid-cols-2 gap-4">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <FormField
                                 control={form.control}
                                 name="email"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel className="text-xs uppercase tracking-wider text-muted-foreground">Email</FormLabel>
+                                        <FormLabel className="text-sm font-bold uppercase tracking-wider text-muted-foreground">Email</FormLabel>
                                         <FormControl>
-                                            <Input placeholder="tu@email.com" className="bg-secondary/20 border-primary/10" {...field} />
+                                            <Input placeholder="tu@email.com" className="h-11 sm:h-10 bg-secondary/20 border-primary/10" {...field} />
                                         </FormControl>
                                         <FormMessage />
                                     </FormItem>
@@ -182,10 +182,10 @@ export function FeedbackDialog() {
                                 name="country"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel className="text-xs uppercase tracking-wider text-muted-foreground">País</FormLabel>
+                                        <FormLabel className="text-sm font-bold uppercase tracking-wider text-muted-foreground">País</FormLabel>
                                         <Select onValueChange={field.onChange} defaultValue={field.value}>
                                             <FormControl>
-                                                <SelectTrigger className="bg-secondary/20 border-primary/10">
+                                                <SelectTrigger className="h-11 sm:h-10 bg-secondary/20 border-primary/10">
                                                     <SelectValue placeholder="Seleccioná un país" />
                                                 </SelectTrigger>
                                             </FormControl>
@@ -222,7 +222,7 @@ export function FeedbackDialog() {
                             name="message"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel className="text-xs uppercase tracking-wider text-muted-foreground">Mensaje</FormLabel>
+                                    <FormLabel className="text-sm font-bold uppercase tracking-wider text-muted-foreground">Mensaje</FormLabel>
                                     <FormControl>
                                         <Textarea
                                             placeholder=""
@@ -239,7 +239,7 @@ export function FeedbackDialog() {
                             <Button
                                 type="submit"
                                 disabled={isSubmitting}
-                                className="w-full sm:w-auto bg-primary text-primary-foreground hover:bg-primary/90"
+                                className="h-11 sm:h-10 w-full sm:w-auto bg-primary text-primary-foreground hover:bg-primary/90"
                             >
                                 {isSubmitting ? (
                                     <>

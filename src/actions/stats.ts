@@ -3,9 +3,10 @@
 import { supabase } from '@/lib/supabase'
 import { getRequestClient, verifyAdmin } from '@/lib/auth-utils'
 import { revalidatePath } from 'next/cache'
+import type { BattingStat, PitchingStat } from '@/lib/types'
 
-function mapToSnakeCase(obj: any) {
-    const result: any = {};
+function mapToSnakeCase(obj: Record<string, unknown>): Record<string, unknown> {
+    const result: Record<string, unknown> = {};
     if (!obj) return result;
     for (const key in obj) {
         const snakeKey = key.replace(/[A-Z]/g, letter => `_${letter.toLowerCase()}`);
@@ -14,13 +15,12 @@ function mapToSnakeCase(obj: any) {
     return result;
 }
 
-export async function saveBattingStat(data: { playerId: number, gameId: number, stats: any, token?: string }) {
-    console.log(`[ACTION] Saving batting stats for player ${data.playerId} in game ${data.gameId}`);
+export async function saveBattingStat(data: { playerId: number, gameId: number, stats: Partial<BattingStat>, token?: string }) {
     const client = getRequestClient(data.token);
     await verifyAdmin(client, data.token);
 
     // Map camelCase keys to snake_case for DB
-    const mappedStats = mapToSnakeCase(data.stats);
+    const mappedStats = mapToSnakeCase(data.stats as Record<string, unknown>);
 
     const { error } = await client
         .from('batting_stats')
@@ -40,13 +40,12 @@ export async function saveBattingStat(data: { playerId: number, gameId: number, 
     revalidatePath('/');
 }
 
-export async function savePitchingStat(data: { playerId: number, gameId: number, stats: any, token?: string }) {
-    console.log(`[ACTION] Saving pitching stats for player ${data.playerId} in game ${data.gameId}`);
+export async function savePitchingStat(data: { playerId: number, gameId: number, stats: Partial<PitchingStat>, token?: string }) {
     const client = getRequestClient(data.token);
     await verifyAdmin(client, data.token);
 
     // Map camelCase keys to snake_case for DB
-    const mappedStats = mapToSnakeCase(data.stats);
+    const mappedStats = mapToSnakeCase(data.stats as Record<string, unknown>);
 
     const { error } = await client
         .from('pitching_stats')
@@ -90,6 +89,7 @@ export async function getAllStats() {
     if (bError || pError) console.error('Error fetching all stats:', bError || pError)
 
     // Map structure to match frontend expectations
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const mapStat = (stat: any) => ({
         ...stat,
         playerId: stat.player_id,

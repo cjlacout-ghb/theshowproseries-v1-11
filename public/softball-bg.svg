@@ -1,0 +1,23 @@
+<svg width="800" height="800" viewBox="0 0 800 800" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <circle cx="400" cy="400" r="380" stroke="white" stroke-width="4" stroke-opacity="0.3" />
+  
+  {/* Costura izquierda */}
+  <path d="M230 110 C 360 250, 360 550, 230 690" stroke="white" stroke-width="6" stroke-opacity="0.2" />
+  {/* Costura derecha */}
+  <path d="M570 110 C 440 250, 440 550, 570 690" stroke="white" stroke-width="6" stroke-opacity="0.2" />
+  
+  {/* Detalle de costuras (puntadas) */}
+  <g stroke="white" stroke-width="2" stroke-opacity="0.2">
+    <line x1="285" y1="200" x2="245" y2="180" />
+    <line x1="305" y1="280" x2="265" y2="260" />
+    <line x1="315" y1="400" x2="275" y2="400" />
+    <line x1="305" y1="520" x2="265" y2="540" />
+    <line x1="285" y1="600" x2="245" y2="620" />
+    
+    <line x1="515" y1="200" x2="555" y2="180" />
+    <line x1="495" y1="280" x2="535" y2="260" />
+    <line x1="485" y1="400" x2="525" y2="400" />
+    <line x1="495" y1="520" x2="535" y2="540" />
+    <line x1="515" y1="600" x2="555" y2="620" />
+  </g>
+</svg>

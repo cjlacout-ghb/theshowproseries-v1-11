@@ -1,11 +1,14 @@
 "use server";
 
+import { cache } from 'react'
 import { supabase } from '@/lib/supabase'
 import { getRequestClient, verifyAdmin } from '@/lib/auth-utils'
 import { revalidatePath } from 'next/cache'
-import type { DBTeam, DBGame } from '@/lib/types'
+import type { DBTeam, DBGame, Game } from '@/lib/types'
 
-export async function getTeams() {
+type UpdateGameData = Partial<Pick<Game, 'score1' | 'score2' | 'hits1' | 'hits2' | 'errors1' | 'errors2' | 'innings' | 'team1Id' | 'team2Id'>>;
+export const getTeams = cache(async () => {
+
     const { data: teams, error } = await supabase
         .from('teams')
         .select(`
@@ -27,9 +30,9 @@ export async function getTeams() {
             placeOfBirth: p.place_of_birth
         }))
     }))
-}
+});
 
-export async function getGames() {
+export const getGames = cache(async () => {
     // Fetch games first
     const { data: games, error: gamesError } = await supabase
         .from('games')
@@ -58,8 +61,6 @@ export async function getGames() {
     if (pError) {
         console.error('Error fetching pitching_stats:', pError)
     }
-
-    console.log(`[getGames] Fetched ${games?.length} games, ${battingStats?.length || 0} batting stats, ${pitchingStats?.length || 0} pitching stats`);
 
     // Helper to flatten stats from JSONB column
     const flattenStat = (dbRow: any) => {
@@ -100,10 +101,9 @@ export async function getGames() {
             isChampionship: game.id === 16
         };
     })
-}
+});
 
-export async function updateGame(gameId: number, data: any, token?: string) {
-    console.log(`[ACTION] Updating game ${gameId}`);
+export async function updateGame(gameId: number, data: UpdateGameData, token?: string) {
     const client = getRequestClient(token);
     await verifyAdmin(client, token);
     const updateData: any = {}

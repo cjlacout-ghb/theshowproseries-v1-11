@@ -12,9 +12,7 @@ import {
 } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
-import { ClipboardList } from "lucide-react";
-
-import { Upload } from "lucide-react";
+import { ClipboardList, Upload } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
@@ -99,14 +97,6 @@ export default function BoxScoreDialog({ game, teams, onSaveBatting, onSavePitch
     const team1Pitchers = selectedPitchers.filter(id => team1?.players.some(p => p.id === id));
     const team2Pitchers = selectedPitchers.filter(id => team2?.players.some(p => p.id === id));
 
-    const getTeamForPlayer = (playerId: number) => {
-        if (team1?.players.some(p => p.id === playerId)) return team1;
-        if (team2?.players.some(p => p.id === playerId)) return team2;
-        return null;
-    };
-
-
-
     return (
         <Dialog>
             <DialogTrigger asChild>
@@ -126,7 +116,7 @@ export default function BoxScoreDialog({ game, teams, onSaveBatting, onSavePitch
                 </DialogHeader>
 
                 <Tabs defaultValue="batting" className="w-full flex-1 flex flex-col overflow-hidden">
-                    <TabsList className="w-full justify-start rounded-none border-b border-primary/10 bg-muted/30 p-0 h-10 flex-shrink-0">
+                    <TabsList className="w-full justify-start rounded-none border-b border-primary/10 bg-muted/30 p-0 h-11 flex-shrink-0">
                         <TabsTrigger value="batting" className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-primary/5 px-8 h-full font-bold text-xs uppercase tracking-widest">Bateo</TabsTrigger>
                         <TabsTrigger value="pitching" className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-primary/5 px-8 h-full font-bold text-xs uppercase tracking-widest">Pitcheo</TabsTrigger>
                     </TabsList>
@@ -135,7 +125,7 @@ export default function BoxScoreDialog({ game, teams, onSaveBatting, onSavePitch
                         <div className="absolute right-14 top-3 z-50">
                             <Dialog open={isImportOpen} onOpenChange={setIsImportOpen}>
                                 <DialogTrigger asChild>
-                                    <Button size="sm" variant="outline" className="gap-2 border-primary/20 text-[10px] font-black uppercase tracking-widest hover:border-primary hover:bg-primary/5">
+                                    <Button variant="outline" className="h-11 sm:h-9 w-full sm:w-auto gap-2 border-primary/20 text-[10px] font-black uppercase tracking-widest hover:border-primary hover:bg-primary/5">
                                         <Upload className="w-3 h-3" />
                                         Importar TXT
                                     </Button>
@@ -205,7 +195,7 @@ export default function BoxScoreDialog({ game, teams, onSaveBatting, onSavePitch
                 </Tabs>
 
                 <DialogFooter className="py-3 px-4 bg-muted/30 border-t border-primary/10">
-                    <Button variant="outline" className="w-full font-black uppercase tracking-widest text-[11px] h-10" asChild>
+                    <Button variant="outline" className="w-full font-black uppercase tracking-widest text-[11px] h-11" asChild>
                         <DialogTrigger>Cerrar Panel</DialogTrigger>
                     </Button>
                 </DialogFooter>

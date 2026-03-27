@@ -19,6 +19,9 @@ import { Button } from "./ui/button";
 import { cn } from "@/lib/utils";
 import { ArrowUpDown, Trash2, AlertTriangle } from "lucide-react";
 
+/** Game IDs that were suspended due to weather — no scores or innings are shown. */
+const SUSPENDED_GAME_IDS = new Set([13, 14, 15]);
+
 type ScheduleCardProps = {
   title: string;
   games: Game[];
@@ -124,7 +127,7 @@ export default function ScheduleCard({
           const hasInnings = game.innings.some((inn: any) => inn[0] !== "" || inn[1] !== "");
           const renderValue = (val: string) => (val === "0" && !hasInnings) ? "" : val;
 
-          const isSuspended = game.id === 13 || game.id === 14 || game.id === 15;
+          const isSuspended = SUSPENDED_GAME_IDS.has(game.id);
 
           return (
             <Fragment key={game.id}>
@@ -155,7 +158,7 @@ export default function ScheduleCard({
                   <span className="text-[9px] font-black text-muted-foreground/60 text-right uppercase tracking-wider mt-1 shrink-0 ml-4 max-w-[120px] sm:max-w-none">Estadio Mundialista ‘Ing Nafaldo Cargnel’</span>
                 </div>
 
-                <div className="grid grid-cols-[1fr_3.5rem_3.5rem_3.5rem] gap-x-3 gap-y-3 items-center">
+                <div className="grid grid-cols-[1fr_3.5rem_3.5rem_3.5rem] gap-x-2 sm:gap-x-3 gap-y-3 items-center">
                   <div className="flex items-center gap-2">
                     <span className="text-[10px] font-black tracking-[0.2em] text-primary/60 uppercase">Equipos</span>
                     {isAdmin && (
@@ -288,12 +291,12 @@ export default function ScheduleCard({
                         <Input
                           key={`g${game.id}-t1-inn${inningNum}`}
                           type="text"
-                          className="text-center h-9 rounded-lg bg-muted/30 border-transparent font-bold focus:bg-background focus:border-primary transition-all p-0"
+                          className="text-center h-11 sm:h-9 rounded-lg bg-muted/30 border-transparent font-bold focus:bg-background focus:border-primary transition-all p-0"
                           value={inningData[0]}
                           onChange={(e) => onInningChange(game.id, inningNum, 0, e.target.value)}
                         />
                       ) : (
-                        <div key={`g${game.id}-t1-inn${inningNum}`} className="flex items-center justify-center h-9 rounded-lg bg-muted/10 border border-primary/5 font-bold text-xs opacity-70">
+                        <div key={`g${game.id}-t1-inn${inningNum}`} className="flex items-center justify-center h-11 sm:h-9 rounded-lg bg-muted/10 border border-primary/5 font-bold text-xs opacity-70">
                           {inningData[0]}
                         </div>
                       )
@@ -308,12 +311,12 @@ export default function ScheduleCard({
                         <Input
                           key={`g${game.id}-t2-inn${inningNum}`}
                           type="text"
-                          className="text-center h-9 rounded-lg bg-muted/30 border-transparent font-bold focus:bg-background focus:border-primary transition-all p-0"
+                          className="text-center h-11 sm:h-9 rounded-lg bg-muted/30 border-transparent font-bold focus:bg-background focus:border-primary transition-all p-0"
                           value={inningData[1]}
                           onChange={(e) => onInningChange(game.id, inningNum, 1, e.target.value)}
                         />
                       ) : (
-                        <div key={`g${game.id}-t2-inn${inningNum}`} className="flex items-center justify-center h-9 rounded-lg bg-muted/10 border border-primary/5 font-bold text-xs opacity-70">
+                        <div key={`g${game.id}-t2-inn${inningNum}`} className="flex items-center justify-center h-11 sm:h-9 rounded-lg bg-muted/10 border border-primary/5 font-bold text-xs opacity-70">
                           {inningData[1]}
                         </div>
                       )
@@ -351,13 +354,12 @@ export default function ScheduleCard({
                     )}
                   </div>
 
-                  <div className="flex gap-2">
+                  <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
                     {onNavigateToStandings && (
                       <Button
                         variant="outline"
-                        size="sm"
                         onClick={onNavigateToStandings}
-                        className="text-[10px] font-black uppercase tracking-widest border-primary/10 hover:bg-primary/5"
+                        className="h-11 sm:h-9 w-full sm:w-auto text-[10px] font-black uppercase tracking-widest border-primary/10 hover:bg-primary/5"
                       >
                         Tabla Posiciones
                       </Button>
@@ -365,9 +367,8 @@ export default function ScheduleCard({
                     {onNavigate && (
                       <Button
                         variant="secondary"
-                        size="sm"
                         onClick={onNavigate}
-                        className="text-[10px] font-black uppercase tracking-widest hover:translate-y-[-1px] transition-transform"
+                        className="h-11 sm:h-9 w-full sm:w-auto text-[10px] font-black uppercase tracking-widest hover:translate-y-[-1px] transition-transform"
                       >
                         Regresar
                       </Button>

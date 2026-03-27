@@ -46,9 +46,6 @@ export async function importPlayers(teamId: number, csvData: string, token?: str
     }
 
     if (replace && teamId) {
-        console.log(`[ACTION] Replacing roster for Team ${teamId}. Deleting old players...`);
-        // Be careful: if we delete players, we lose their stats unless we duplicate IDs (which we can't easily do from CSV without checking names).
-        // Since the user asked for "Brand new list", we assume a fresh start or fixing a roster.
         const { error: deleteError } = await client
             .from('players')
             .delete()
@@ -99,7 +96,6 @@ export async function resetTournamentScores(token?: string) {
     try {
         const client = getRequestClient(token);
         await verifyAdmin(client, token);
-        console.log('Starting full tournament reset...');
 
         // 1. Delete all batting stats
         const { error: bError, count: bCount } = await client
@@ -111,7 +107,6 @@ export async function resetTournamentScores(token?: string) {
             console.error('Error clearing batting stats:', bError);
             throw new Error(`Error en batting_stats: ${bError.message}`);
         }
-        console.log(`Deleted ${bCount} batting stats.`);
 
         // 2. Delete all pitching stats
         const { error: pError, count: pCount } = await client
@@ -123,7 +118,6 @@ export async function resetTournamentScores(token?: string) {
             console.error('Error clearing pitching stats:', pError);
             throw new Error(`Error en pitching_stats: ${pError.message}`);
         }
-        console.log(`Deleted ${pCount} pitching stats.`);
 
         // 3. Reset all games scores, innings, hits, and errors
         const { data: updatedGames, error: error1 } = await client
@@ -166,7 +160,6 @@ export async function resetTournamentScores(token?: string) {
             throw new Error(`Error en juego 16: ${error2.message}`);
         }
 
-        console.log('Reset successful and verified.');
         revalidatePath('/');
         return { success: true };
     } catch (err: any) {
@@ -179,7 +172,6 @@ export async function resetGameData(gameId: number, token?: string) {
     try {
         const client = getRequestClient(token);
         await verifyAdmin(client, token);
-        console.log(`[ACTION] Resetting data for game ${gameId}...`);
 
         // 1. Delete batting stats for this game
         const { error: bError } = await client
@@ -222,7 +214,6 @@ export async function resetGameData(gameId: number, token?: string) {
             throw new Error(`Error al resetear juego: ${gError.message}`);
         }
 
-        console.log(`Successfully reset data for game ${gameId}.`);
         revalidatePath('/');
         return { success: true };
     } catch (err: any) {

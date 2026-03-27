@@ -57,7 +57,7 @@ export default function TournamentFooter({ onReset, isAdmin = false }: Tournamen
                                     console.log("[FOOTER] Reiniciar button clicked");
                                     onReset();
                                 }}
-                                className="group flex items-center gap-3 text-[11px] text-white/40 hover:text-white bg-white/5 hover:bg-destructive transition-all duration-300 font-bold uppercase tracking-[0.2em] px-8 py-3 rounded-xl border border-white/10 hover:border-white/20 cursor-pointer relative z-[9999] shadow-2xl active:scale-95"
+                                className="group flex items-center gap-3 text-[11px] text-white/40 hover:text-white bg-white/5 hover:bg-destructive transition-all duration-300 font-bold uppercase tracking-[0.2em] px-8 h-11 rounded-xl border border-white/10 hover:border-white/20 cursor-pointer relative z-[9999] shadow-2xl active:scale-95"
                             >
                                 <span className="w-1.5 h-1.5 rounded-full bg-destructive group-hover:bg-white animate-pulse" />
                                 Reiniciar Sistema

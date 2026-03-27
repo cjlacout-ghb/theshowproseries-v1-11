@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import type { Standing, Team, Game } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import {
@@ -46,7 +46,18 @@ export default function StandingsTable({
 }: StandingsTableProps) {
   const [hoveredTeamId, setHoveredTeamId] = useState<number | null>(null);
 
-  const tableColumns = ["POS", "TEAM", "G", "W", "L", "RS", "RA", "PCT", "GB"];
+  // Columns hidden on mobile to prevent truncation — show all on sm screens and above
+  const tableColumns = [
+    { key: "POS",  hide: false },
+    { key: "TEAM", hide: false },
+    { key: "G",   hide: false },
+    { key: "W",   hide: false },
+    { key: "L",   hide: false },
+    { key: "RS",  hide: true  }, // hidden on mobile
+    { key: "RA",  hide: true  }, // hidden on mobile
+    { key: "PCT", hide: false },
+    { key: "GB",  hide: true  }, // hidden on mobile
+  ];
 
   const getTeamName = (teamId: number) => {
     return teams.find((t) => t.id === teamId)?.name || "Unknown Team";
@@ -86,6 +97,16 @@ export default function StandingsTable({
     return false;
   }
 
+  // Pre-compute all team records once to avoid recalculation on hover
+  const allTeamRecords = useMemo(() => {
+    const records: Record<number, ReturnType<typeof getTeamRecord>> = {};
+    standings.forEach(s => {
+      records[s.teamId] = getTeamRecord(s.teamId);
+    });
+    return records;
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [games, teams, standings]);
+
   const hasTies = standings.some(isTied);
 
   return (
@@ -103,16 +124,19 @@ export default function StandingsTable({
       </CardHeader>
       <CardContent className="p-0 relative">
         <TooltipProvider>
-          <div className="overflow-x-auto">
-            <Table>
+          {/* Wrapper: overflow-x-auto with right-fade to hint at scrollability */}
+          <div className="relative">
+            <div className="overflow-x-auto">
+              <Table className="min-w-[480px]">
               <TableHeader className="bg-primary/[0.03]">
                 <TableRow className="border-b border-primary/10 hover:bg-transparent">
-                  {tableColumns.map((col) => (
-                    <TableHead key={col} className={cn(
+                  {tableColumns.map(({ key, hide }) => (
+                    <TableHead key={key} className={cn(
                       "h-12 text-[11px] font-black uppercase tracking-[0.1em] text-primary/70",
-                      col === "TEAM" ? "w-[40%]" : "text-center"
+                      key === "TEAM" ? "w-[40%] min-w-[130px]" : "text-center whitespace-nowrap",
+                      hide && "hidden sm:table-cell"
                     )}>
-                      {col}
+                      {key}
                     </TableHead>
                   ))}
                 </TableRow>
@@ -121,7 +145,6 @@ export default function StandingsTable({
                 {standings.map((standing, index) => {
                   const teamName = getTeamName(standing.teamId);
                   const isLeader = index === 0 && standing.w > 0;
-                  const teamRecord = getTeamRecord(standing.teamId);
 
                   return (
                     <TableRow key={standing.teamId} className="group hover:bg-primary/[0.02] border-b border-primary/5 transition-colors">
@@ -162,12 +185,12 @@ export default function StandingsTable({
                       </TableCell>
                       <TableCell className="text-center font-bold text-sm">{standing.w}</TableCell>
                       <TableCell className="text-center font-bold text-sm text-muted-foreground">{standing.l}</TableCell>
-                      <TableCell className="text-center text-sm font-medium">{standing.rs}</TableCell>
-                      <TableCell className="text-center text-sm font-medium">{standing.ra}</TableCell>
+                      <TableCell className="hidden sm:table-cell text-center text-sm font-medium">{standing.rs}</TableCell>
+                      <TableCell className="hidden sm:table-cell text-center text-sm font-medium">{standing.ra}</TableCell>
                       <TableCell className="text-center font-mono text-sm font-bold text-primary/80">
                         {formatPct(standing.pct)}
                       </TableCell>
-                      <TableCell className="text-center font-mono text-sm font-bold">
+                      <TableCell className="hidden sm:table-cell text-center font-mono text-sm font-bold">
                         {standing.gb === 0 ? <span className="text-primary/40">—</span> : standing.gb.toFixed(1)}
                       </TableCell>
                     </TableRow>
@@ -176,10 +199,13 @@ export default function StandingsTable({
               </TableBody>
             </Table>
           </div>
+          {/* Right-edge fade: visible only while table can still scroll (i.e. on small screens) */}
+          <div className="pointer-events-none absolute inset-y-0 right-0 w-8 bg-gradient-to-l from-card/80 to-transparent sm:hidden" />
+        </div>
 
           {/* Overlay fijo para el historial de partidos */}
           {(() => {
-            const hoveredTeamRecord = hoveredTeamId ? getTeamRecord(hoveredTeamId) : [];
+            const hoveredTeamRecord = hoveredTeamId ? (allTeamRecords[hoveredTeamId] ?? []) : [];
             return (
               <div className={cn(
                 "absolute top-1/2 left-1/2 md:left-[30%] lg:left-[25%] xl:left-[22%] -translate-x-1/2 md:translate-x-0 -translate-y-1/2 pointer-events-none z-[100] w-[280px] sm:w-[320px] p-4 bg-background/95 backdrop-blur-xl border border-primary/20 shadow-2xl rounded-2xl transition-all duration-300",
